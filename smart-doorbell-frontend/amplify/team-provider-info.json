@@ -1,0 +1,19 @@
+{
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "smart-doorbell-20190423144356-authRole",
+            "UnauthRoleArn": "arn:aws:iam::245491298808:role/smart-doorbell-20190423144356-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::245491298808:role/smart-doorbell-20190423144356-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "smart-doorbell-20190423144356-deployment",
+            "UnauthRoleName": "smart-doorbell-20190423144356-unauthRole",
+            "StackName": "smart-doorbell-20190423144356",
+            "StackId": "arn:aws:cloudformation:us-east-1:245491298808:stack/smart-doorbell-20190423144356/c02309c0-65f7-11e9-8caa-12f81177eb92"
+        },
+        "categories": {
+            "auth": {
+                "cognito562df034": {}
+            }
+        }
+    }
+}
