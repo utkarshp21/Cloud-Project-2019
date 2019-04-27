@@ -1,5 +1,23 @@
 import boto3
 
+def delete_collection(collectionId):
+    
+    print('Attempting to delete collection ' + collectionId)
+    client=boto3.client('rekognition')
+    statusCode=''
+    try:
+        response=client.delete_collection(CollectionId=collectionId)
+        statusCode=response['StatusCode']
+        
+    except Exception as e:
+        if e.response['Error']['Code'] == 'ResourceNotFoundException':
+            print ('The collection ' + collectionId + ' was not found ')
+        else:
+            print ('Error other than Not Found occurred: ' + e.response['Error']['Message'])
+        statusCode=e.response['ResponseMetadata']['HTTPStatusCode']
+    print('Operation returned Status Code: ' + str(statusCode))
+    print('Done...')
+
 def create_collection(collection_id):
     
     client = boto3.client('rekognition')
@@ -18,8 +36,25 @@ def list_faces(collection_id):
     for face in response['Faces']:
         print ("  FaceId : {} and ExternalImageId : {}".format(face['FaceId'], face['ExternalImageId']))
         # print ("  ImageId : {}".format(face['ImageId']))
+
+def search_collection_using_face_id(collection_id, threshold, face_id):        
+    
+    client = boto3.client('rekognition') 
+    print("Searching " + face_id + " in " + collection_id)
+    response = client.search_faces(
+        CollectionId = collection_id,
+        FaceId = face_id,
+        FaceMatchThreshold = threshold
+    )
+    
+    if len(response['FaceMatches']) > 0:
+        print(response['FaceMatches'])
+        return response['FaceMatches']
+    else:
+        print("No Faces Found in Collection")
+        return None
         
-def search_collection(collection_id, threshold,bucket, bucket_file_name):
+def search_collection_using_s3(collection_id, threshold,bucket, bucket_file_name):
 	
 	client = boto3.client('rekognition') 
 	 
@@ -60,6 +95,6 @@ def index_face(collection_id, bucket_name, bucket_file_name):
 
 
     if len(response['FaceRecords']) > 0:
-        return response['FaceRecords']['Face']['FaceId']
+        return response['FaceRecords']
     else:
         return None
