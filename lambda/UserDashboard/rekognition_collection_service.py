@@ -18,8 +18,22 @@ def list_faces(collection_id):
     for face in response['Faces']:
         print ("  FaceId : {} and ExternalImageId : {}".format(face['FaceId'], face['ExternalImageId']))
         # print ("  ImageId : {}".format(face['ImageId']))
+
+def search_collection_using_face_id(collection_id, threshold, face_id):        
+    
+    client = boto3.client('rekognition') 
+    
+    response = client.search_faces(
+        CollectionId = collection_id,
+        FaceId = face_id,
+        FaceMatchThreshold = threshold
+    )  
+    if len(response['FaceMatches']) > 0:
+        return response['FaceMatches']
+    else:
+        return None
         
-def search_collection(collection_id, threshold,bucket, bucket_file_name):
+def search_collection_using_s3(collection_id, threshold,bucket, bucket_file_name):
 	
 	client = boto3.client('rekognition') 
 	 
@@ -60,6 +74,6 @@ def index_face(collection_id, bucket_name, bucket_file_name):
 
 
     if len(response['FaceRecords']) > 0:
-        return response['FaceRecords']['Face']['FaceId']
+        return response['FaceRecords']
     else:
         return None
