@@ -9,6 +9,7 @@ import boto3
 s3 = boto3.client('s3')
 import png
 # initialize the camera and grab a reference to the raw camera capture
+
 camera = PiCamera()
 camera.resolution = (640, 480)
 camera.framerate = 32
@@ -23,6 +24,8 @@ time.sleep(0.1)
 
 face_cascade = cv2.CascadeClassifier('/home/pi/opencv/data/haarcascades/haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier('/home/pi/opencv/data/haarcascades/haarcascade_eye.xml')
+num_faces = 0
+flicker_ctr = 0
 
 # capture frames from the camera
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -41,31 +44,48 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		flags=cv2.CASCADE_SCALE_IMAGE
 	)
 
-	
-
 	# Draw a rectangle around the faces
 	
-	# for (x, y, w, h) in faces:
-	# 	cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
+	for (x, y, w, h) in faces:
+		cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
 	# cv2.imwrite('newobama.png', image)
+
+	# 	#one way
+	# 	# img = Image.fromarray(image)
+	# 	# out_img = BytesIO()
+	# 	# img.save(out_img, format='png')
+	# 	# out_img.seek(0)
+	# 	# s3.put_object(Bucket="surveillance-cam", Key = imageName, Body = out_img, ContentType= 'image/png')	
+
+	if num_faces < len(faces):
+		flicker_ctr += 1
+   
+	if(len(faces) == 0):
+		flicker_ctr = 0
+		num_faces = 0
+
+	if num_faces != len(faces):
+		if flicker_ctr > 20:
+			# snap pic
+			imagePath = "./collectedImages/"
+			imageName = str(time.strftime("%Y_%m_%d_%H_%M")) + '.png'
+			# cv2.imwrite(imageName, image)
+
+			#one way
+			# img = Image.fromarray(image)
+			# out_img = BytesIO()
+			# img.save(out_img, format='png')
+			# out_img.seek(0)
+			# s3.put_object(Bucket="surveillance-cam", Key = imageName, Body = out_img, ContentType= 'image/png')	
+
+			#otherway
+			cv2.imwrite(imagePath+imageName, image)
+			local_image = open(imagePath+imageName, 'rb')
+			# s3.put_object(Bucket="surveillance-cam", Key = imageName, Body = local_image, ContentType= 'image/png')	
+
 	
-	if len(faces):
-		imagePath = "./collectedImages/"
-		imageName = str(time.strftime("%Y_%m_%d_%H_%M")) + '.png'
-		# cv2.imwrite(imageName, image)
-
-		#one way
-		# img = Image.fromarray(image)
-		# out_img = BytesIO()
-		# img.save(out_img, format='png')
-		# out_img.seek(0)
-		# s3.put_object(Bucket="surveillance-cam", Key = imageName, Body = out_img, ContentType= 'image/png')	
-
-		#otherway
-		cv2.imwrite(imagePath+imageName, image)
-		local_image = open(imagePath+imageName, 'rb')
-		s3.put_object(Bucket="surveillance-cam", Key = imageName, Body = local_image, ContentType= 'image/png')	
+			num_faces = len(faces)
 
 
 	# show the frame
