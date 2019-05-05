@@ -11,7 +11,8 @@
 #
 # Happy Coding!
 
-service: UserDashboard # NOTE: update this with your service name
+
+service: user-dashboard # NOTE: update this with your service name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -19,7 +20,8 @@ service: UserDashboard # NOTE: update this with your service name
 
 provider:
   name: aws
-  runtime: python3.6
+  runtime: nodejs8.10
+  region: us-east-1
 
 # you can overwrite defaults here
 #  stage: dev
@@ -48,12 +50,15 @@ provider:
 # you can add packaging information here
 #package:
 #  include:
-#    - include-me.py
+#    - include-me.js
 #    - include-me-dir/**
 #  exclude:
-#    - exclude-me.py
+#    - exclude-me.js
 #    - exclude-me-dir/**
 
+functions:
+  dashboard:
+    handler: handler.dashboard
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
