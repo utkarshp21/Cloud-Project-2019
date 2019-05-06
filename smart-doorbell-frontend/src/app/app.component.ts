@@ -12,7 +12,9 @@ export class AppComponent {
   title = 'smart-doorbell-frontend';
 
   constructor(private amplifyService: AmplifyService, public router: Router) { }
-
+  
+  isCollapsed = true;
+  
   signOut() {
     this.amplifyService.auth().signOut();
     this.router.navigate(['/']);
