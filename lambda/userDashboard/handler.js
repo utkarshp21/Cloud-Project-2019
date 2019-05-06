@@ -1,17 +1,12 @@
-'use strict';
+const queryRDS = require('./queryRDS');
 
-module.exports.dashboard = async (event, context) => {
+module.exports.dashboard = async (event, context, callback) => {
 
-  
+  let response = await queryRDS.getSurveillanceImages();
 
   return {
     statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
+    body: response
   };
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
+ 
 };
