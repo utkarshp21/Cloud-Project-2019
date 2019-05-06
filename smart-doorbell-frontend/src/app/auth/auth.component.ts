@@ -17,7 +17,7 @@ export class AuthComponent{
       if (this.isLoggedIn && !isLoggedIn) {
         router.navigate(['']);
       } else if (!this.isLoggedIn && isLoggedIn) {
-        router.navigate(['/secure']);
+        router.navigate(['/dashboard']);
       }
       this.isLoggedIn = isLoggedIn;
     });
