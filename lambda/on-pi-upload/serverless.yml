@@ -19,7 +19,7 @@ service: on-pi-upload # NOTE: update this with your service name
 
 provider:
   name: aws
-  runtime: python2.7
+  runtime: python3.6
 
 # you can overwrite defaults here
 #  stage: dev
