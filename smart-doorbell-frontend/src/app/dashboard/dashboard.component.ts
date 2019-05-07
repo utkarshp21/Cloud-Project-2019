@@ -3,9 +3,10 @@ import { AmplifyService } from 'aws-amplify-angular';
 import { Auth } from 'aws-amplify';
 import { Router } from '@angular/router';
 import User from './types/user';
-
+import { Filter } from './filter';
 
 import { InputBoxComponent } from './input-box/input-box.component';
+import { DashboardService } from './dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,14 +16,14 @@ import { InputBoxComponent } from './input-box/input-box.component';
 export class DashBoardComponent implements OnInit {
 
   @ViewChild("alertContainer", { read: ViewContainerRef }) container;
-  componentRef: ComponentRef;
+  componentRef: ComponentRef<any>;
    
-  constructor(private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
+  constructor(private dashboardService: DashboardService, private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
 
   createComponent(imageDetails) {
     
     this.container.clear();
-    const factory: ComponentFactory = this.resolver.resolveComponentFactory(InputBoxComponent);
+    const factory: ComponentFactory<any> = this.resolver.resolveComponentFactory(InputBoxComponent);
 
     this.componentRef = this.container.createComponent(factory);
 
@@ -34,6 +35,13 @@ export class DashBoardComponent implements OnInit {
 
   ngOnDestroy() {
     this.componentRef.destroy();
+  }
+
+  model = new Filter("", "", " ");
+
+  onFilterSearch(){
+    let result = this.dashboardService.filterImages(this.model);
+    debugger;
   }
 
   title = 'Chat Bot';

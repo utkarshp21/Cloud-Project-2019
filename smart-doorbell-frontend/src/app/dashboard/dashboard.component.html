@@ -1,6 +1,28 @@
 <template #alertContainer></template>
-<!-- <button (click)="createComponent('success')">Create success alert</button>
-<button (click)="createComponent('danger')">Create danger alert</button> -->
+<br>
+
+<form (ngSubmit)="onFilterSearch()"  >
+  
+  <div class="d-inline-block col-xs-12 col-12 col-md-3 form-group">
+    <label for="exampleInputEmail1">Person Name</label>
+    <input type="text" [(ngModel)] = "model.tag" name="tag" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+      placeholder="Enter Person to search">
+  </div>
+
+  <div class="d-inline-block col-xs-12 col-12 col-md-3 form-group">
+    <label>Select Start Date:</label>
+    <input type="text" [(ngModel)] = "model.startDate" name="startDate" [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY, h:mm:ss a'}" placeholder="Start Date" class="form-control" bsDatepicker>
+
+  </div>
+
+  <div class="d-inline-block col-xs-12 col-12 col-md-3 form-group">
+    <label>Select End Date:</label>
+    <input type="text" [(ngModel)] = "model.endDate"  name="endDate" [bsConfig]="{ dateInputFormat: 'MMMM Do YYYY, h:mm:ss a'}" placeholder="End Date" class="form-control" bsDatepicker>
+  </div>
+  
+  <button type="submit" class="btn btn-primary">Filter</button>
+
+</form>
 
 <div class="row">
   <div class="col-sm-4" *ngFor="let image of survilanceImages; let i = index">
