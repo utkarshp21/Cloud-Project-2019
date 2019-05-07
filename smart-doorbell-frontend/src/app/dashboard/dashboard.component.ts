@@ -19,15 +19,14 @@ export class DashBoardComponent implements OnInit {
    
   constructor(private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
 
-  createComponent(type,position) {
+  createComponent(imageDetails) {
     
     this.container.clear();
     const factory: ComponentFactory = this.resolver.resolveComponentFactory(InputBoxComponent);
 
     this.componentRef = this.container.createComponent(factory);
 
-    this.componentRef.instance.type = type;
-    this.componentRef.instance.position = position;
+    this.componentRef.instance.imageDetails = imageDetails;
 
     this.componentRef.instance.output.subscribe(event => console.log(event));
 
@@ -217,7 +216,7 @@ export class DashBoardComponent implements OnInit {
 
   ngOnInit() {
     Auth.currentSession().then(session => {
-
+      debugger;
       this.user = {
         username: session.getIdToken().payload["cognito:username"],
         email: session.getIdToken().payload['email'],
@@ -307,7 +306,11 @@ export class DashBoardComponent implements OnInit {
 
       let boxCoordinates = this.getBoxCoordinates(image, img);
         if (isIntersect(clickedPos, boxCoordinates) && !image.tagged) {
-          this.createComponent("Image Clicked", clickedMouse);
+          let imageDetails = {
+            position: clickedMouse,
+            faceId: image.faceId
+          }
+          this.createComponent(imageDetails);
         }else{
           this.container.clear();
         }

@@ -3,7 +3,7 @@
   <p>{{position.x}},{{position.y}}</p>
 <div> -->
 
-<form (ngSubmit)="onSubmit()" [style.top.px]="position.y" [style.left.px]="position.x" style="position: absolute; z-index:10"> 
+<form (ngSubmit)="onSubmit()" [style.top.px]="imageDetails.position.y" [style.left.px]="imageDetails.position.x" style="position: absolute; z-index:10"> 
     <div class="form-group">
       <input required type="text" [(ngModel)]="tag" class="form-control" name="tag" id="tag" placeholder="Input Tag">
     </div>
