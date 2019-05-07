@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Playing YouTube video on HTML5 canvas</title>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, width=device-width" />
+    <style type="text/css">
+        body {
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+    <img style="display:none;" id="scream" src="my.jpeg" alt="The Scream">
+
+    <p>Canvas:</p>
+    <canvas id="myCanvas" width="500" height="500">
+        Your browser does not support the HTML5 canvas tag.</canvas>
+
+    <script>
+        window.onload = function () {
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            var img = document.getElementById("scream");
+            ctx.drawImage(img, 0, 0);
+            
+            var canvas = document.getElementById('myCanvas');
+            var context = canvas.getContext('2d');
+
+
+            //or however you get a handle to the IMG
+            var width = img.width;
+            var height = img.height;
+
+            let box1 = {
+                "Width": 0.16857413947582245,
+                "Height": 0.34200599789619446,
+                "Left": 0.18879032135009766,
+                "Top": 0.2254735231399536
+            };
+
+            let box2 = {
+                "Width": 0.18640722334384918,
+                "Height": 0.4353622496128082,
+                "Left": 0.4885527789592743,
+                "Top": 0.11046215891838074
+            }
+
+            let box1Coordinates = {
+                left_c: box1.Left* width,
+                top_c: box1.Top * height,
+                f_width: box1.Width * width,
+                f_height: box1.Height * height
+            }
+
+             let box2Coordinates = {
+                left_c: box2.Left * width,
+                top_c: box2.Top * height,
+                f_width: box2.Width * width,
+                f_height: box2.Height * height
+            }
+
+            context.beginPath();
+            context.rect(box1Coordinates.left_c, box1Coordinates.top_c, box1Coordinates.f_width, box1Coordinates.f_height);
+            context.rect(box2Coordinates.left_c, box2Coordinates.top_c, box2Coordinates.f_width, box2Coordinates.f_height);
+            
+            context.lineWidth = 2;
+            context.strokeStyle = 'black';
+            context.stroke();
+
+        
+        }
+    </script>
+</body>

@@ -1,0 +1,11 @@
+<!-- <div [style.top.px]="position.y" [style.left.px]="position.x" style="position: absolute; z-index:20; color:red">
+  <h1 (click)="output.next('output')">Alert {{type}}</h1>
+  <p>{{position.x}},{{position.y}}</p>
+<div> -->
+
+<form (ngSubmit)="onSubmit()" [style.top.px]="position.y" [style.left.px]="position.x" style="position: absolute; z-index:10"> 
+    <div class="form-group">
+      <input required type="text" [(ngModel)]="tag" class="form-control" name="tag" id="tag" placeholder="Input Tag">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

@@ -11,15 +11,20 @@ import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 import { AuthGuard } from './auth-guard.service';
 
 import { AppBootstrapModule } from './app-bootstrap.module';
+import { InputBoxComponent } from './dashboard/input-box/input-box.component';
+
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     AuthComponent,
     HomeComponent,
-    DashBoardComponent  
+    DashBoardComponent,
+    InputBoxComponent  
   ],
   imports: [
+    FormsModule,
     BrowserModule,
     AppRoutingModule,
     AmplifyAngularModule,
@@ -27,6 +32,7 @@ import { AppBootstrapModule } from './app-bootstrap.module';
     AppBootstrapModule
   ],
   providers: [AmplifyService, AuthGuard],
+  entryComponents: [InputBoxComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
