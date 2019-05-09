@@ -32,12 +32,12 @@ def get_user_id_for_image(face_id, owner_id):
     print("No Users Found")
     return None
 
-def put_face_record(face_id, user_id, s3_path, owner_id, inserted_time, tagged_time):
+def put_face_record(face_id, user_id, s3_path, owner_id, bounding_box_str, inserted_time, tagged_time):
 
     print("Inserting Face Record[%s] for user[%s], owner[%s]" % (face_id, user_id, owner_id))
     conn = getConn()
-    sql = 'insert into images_cc_proj (face_id, owner_id, user_id, s3_path, inserted_time, tagged_time)' \
-    + 'values("%s", "%s", "%s", "%s", %s, %s)' % (face_id, owner_id, user_id, s3_path, inserted_time, tagged_time)
+    sql = 'insert into images_cc_proj (face_id, owner_id, user_id, s3_path, inserted_time, tagged_time, bounding_box)' \
+    + 'values("%s", "%s", "%s", "%s", %s, %s, "%s")' % (face_id, owner_id, user_id, s3_path, inserted_time, tagged_time, bounding_box_str)
     with conn.cursor() as cur:
         cur.execute(sql)        
     conn.commit()       
