@@ -4,7 +4,7 @@ import rekognition_service
 import dynamo_service
 import rds_service
 
-def hello(event, context):
+def uploadPiImages(event, context):
     
     threshold = 85
     bucket_name = "surveillance-cam"

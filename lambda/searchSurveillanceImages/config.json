@@ -1,0 +1,6 @@
+{
+    "dbhost": "smart-door-bell.cte6mbz5fnza.us-east-1.rds.amazonaws.com",
+    "dbuser": "admin",
+    "dbpassword": "admin123",
+    "dbdatabase": "admin"
+}

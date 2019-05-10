@@ -16,10 +16,11 @@ let pool = mysql.createPool({
 });
 
 
-module.exports.getSurveillanceImages = async function () {
+module.exports.tagSurveillanceImages = async function () {
     return new Promise((resolve, reject) => {
         pool.getConnection(function (err, connection) {
             reject(err);
+            
             connection.query('SELECT Name from Employee3 where EmpID=1', function (error, results, fields) {
 
                 connection.release();
