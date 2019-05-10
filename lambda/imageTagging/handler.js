@@ -1,19 +1,16 @@
 'use strict';
-const queryRDS = require('./queryRDS');
+const queryRDS = require('./rds_service');
 
 
 module.exports.imageTagging = async (event, context) => {
+ 
+  let { faceId, tag } = event;
 
-  let response = await queryRDS.tagSurveillanceImages();
+  let response = await queryRDS.tagSurveillanceImages(faceId, tag);
 
   return {
     statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
+    body: response,
   };
 
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 };
