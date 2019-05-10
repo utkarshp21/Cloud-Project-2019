@@ -54,7 +54,7 @@ function build_sql_query(from_date, to_date, user_name){
                 if (user_name){
                     sql += ` or user_name = "${user_name}"`; 
                 }
-                sql += `order by inserted_time`; 
+                sql += ` order by inserted_time`; 
     return sql;
 }
 
