@@ -4,20 +4,10 @@ import rekognition_service
 import dynamo_service
 import rds_service
 
-def uploadPiImages(event, context):
-    
-    threshold = 85
-    bucket_name = "surveillance-cam"
-    collection_id = 'MyCollection'
-    # rekognition_service.delete_collection(collection_id)
-    # rekognition_service.create_collection(collection_id)
-    
-    bucket_keys = ["aa6911/aws_1.jpg"]
-    # bucket_keys = ["asaggarw/aws_1.jpg", "asaggarw/aws_2.jpg", "aa6911/aws_1.jpg", "aa6911/aws_2.jpg", "aa6911/aws_3.jpg"]
-    
-    # bucket_name = event['Records'][0]['s3']['bucket']['name']
-    # bucket_key = event['Records'][0]['s3']['object']['key']
-    
+threshold = 85
+# bucket_keys = ["asaggarw/aws_1.jpg", "asaggarw/aws_2.jpg", "aa6911/aws_1.jpg", "aa6911/aws_2.jpg", "aa6911/aws_3.jpg"]
+
+def index_image(bucket_name, bucket_keys, collection_id):
     for bucket_key in bucket_keys:
         device_owner_id = bucket_key.split("/")[0]
         bucket_file_name = bucket_key.split("/")[1]
@@ -27,6 +17,13 @@ def uploadPiImages(event, context):
         indexed_face_records = rekognition_service.index_face(collection_id, bucket_name, bucket_key)
         for faceRecord in indexed_face_records:
             face_id = faceRecord['Face']['FaceId']
+            bounding_box = faceRecord['Face']['BoundingBox']
+            print(bounding_box)
+            height = bounding_box['Height']
+            width = bounding_box['Width']
+            top = bounding_box['Top']
+            left = bounding_box['Left']
+            bounding_box_str = ','.join(str(e) for e in [width, height, left, top])
             response = rekognition_service.search_collection_using_face_id(collection_id, threshold, face_id)
             if response is None:
                 # create user for face and add in dynamo user table
@@ -38,20 +35,21 @@ def uploadPiImages(event, context):
                 # if matched_user_id is None:
                 #     matched_user_id = "user-" + face_id 
                 #     dynamo_service.put_user_record(matched_user_id, device_owner_id) 
-            rds_service.put_face_record(face_id, matched_user_id, bucket_key, device_owner_id, 1557152593, -1)
+            rds_service.put_face_record(face_id, matched_user_id, bucket_key, device_owner_id, bounding_box_str, 1557152593, -1)
     
-    
-    # matched_image_id = rekognition_service.search_collection(collection_id, threshold, bucket_name, bucket_key)
-    # rekognition_service.list_faces(collection_id)
-    
-    body = {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "input": event
-    }
 
+def uploadPiImages(event, context):
+    
+    # rekognition_service.delete_collection(collection_id)
+    # rekognition_service.create_collection(collection_id)
+    bucket_name = "surveillance-cam"
+    collection_id = 'MyCollection'
+    bucket_keys = ["aa6911/aws_3.jpg"]
+    # bucket_name = event['Records'][0]['s3']['bucket']['name']
+    # bucket_key = event['Records'][0]['s3']['object']['key']
+    index_image(bucket_name, bucket_keys, collection_id)
     response = {
         "statusCode": 200,
-        "body": json.dumps(body)
+        "body": "Success"
     }
-
     return response
