@@ -3,6 +3,7 @@ type User = {
     username: string,
     email: string,
     phone_number: string,
+    idToken:string
 };
 
 export default User;

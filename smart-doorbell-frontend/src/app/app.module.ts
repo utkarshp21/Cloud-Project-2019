@@ -14,6 +14,7 @@ import { AppBootstrapModule } from './app-bootstrap.module';
 import { InputBoxComponent } from './dashboard/input-box/input-box.component';
 
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     AmplifyAngularModule,
     BrowserModule,
     AppBootstrapModule

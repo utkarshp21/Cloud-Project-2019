@@ -3,7 +3,7 @@ import { AmplifyService } from 'aws-amplify-angular';
 import { Auth } from 'aws-amplify';
 import { Router } from '@angular/router';
 import User from './types/user';
-import { Filter } from './filter';
+import { Filter } from './types/filter';
 
 import { InputBoxComponent } from './input-box/input-box.component';
 import { DashboardService } from './dashboard.service';
@@ -17,7 +17,8 @@ export class DashBoardComponent implements OnInit {
 
   @ViewChild("alertContainer", { read: ViewContainerRef }) container;
   componentRef: ComponentRef<any>;
-   
+  dashBoardImages:Array<any>;
+
   constructor(private dashboardService: DashboardService, private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
 
   createComponent(imageDetails) {
@@ -34,14 +35,18 @@ export class DashBoardComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.componentRef.destroy();
+    if(this.componentRef){
+      this.componentRef.destroy();
+    }
   }
 
-  model = new Filter("", "", " ");
+  filter = new Filter("Utkarsh", Date.now(), Date.now());
 
   onFilterSearch(){
-    let result = this.dashboardService.filterImages(this.model);
-    debugger;
+    this.dashboardService.filterImages(Object.assign({}, this.filter), this.user.idToken).subscribe(data => {
+        this.dashBoardImages = data.body;
+        debugger;
+    });
   }
 
   title = 'Chat Bot';
@@ -51,16 +56,17 @@ export class DashBoardComponent implements OnInit {
     {
       src:"../../assets/images/my.jpeg",
       boundedBox:[{
-        "faceId":123123,
-        "tagged":true,
+        "faceId":123,
+        "tagged":false,
         "name":"Don't know",
         "Width": 0.16857413947582245,
         "Height": 0.34200599789619446,
         "Left": 0.18879032135009766,
         "Top": 0.2254735231399536
       },{
-        "faceId": 123123,
-        "tagged":false,
+        "faceId": 124,
+        "tagged":true,
+        "name": "Don't know",
         "Width": 0.18640722334384918,
         "Height": 0.4353622496128082,
         "Left": 0.4885527789592743,
@@ -224,30 +230,30 @@ export class DashBoardComponent implements OnInit {
 
   ngOnInit() {
     Auth.currentSession().then(session => {
-      debugger;
       this.user = {
         username: session.getIdToken().payload["cognito:username"],
         email: session.getIdToken().payload['email'],
         phone_number: session.getIdToken().payload['phone_number'],
         cognitoId: session.getIdToken().payload['sub'],
+        idToken: session.getIdToken().jwtToken
       };
-
+     
       console.log(this.user);
 
     });
   }
 
   getBoxCoordinates(boundedbox,img){
+
     return {
-      left_c: boundedbox.Left * img.width,
-      top_c: boundedbox.Top * img.height,
-      f_width: boundedbox.Width * img.width,
-      f_height: boundedbox.Height * img.height
+      left_c: +boundedbox.left * img.width,
+      top_c: +boundedbox.top * img.height,
+      f_width: +boundedbox.width * img.width,
+      f_height: +boundedbox.height * img.height
     }
   }
 
   makeCanvasRect(image){
-
     let c = <HTMLCanvasElement>document.getElementById('canvas-' + image.src);
     let ctx = c.getContext("2d");
     let img = <HTMLCanvasElement>document.getElementById('image-' + image.src);
@@ -262,17 +268,18 @@ export class DashBoardComponent implements OnInit {
 
     image["boundedBox"].forEach(boundedbox => {
         let boxCoordinates = this.getBoxCoordinates(boundedbox,img);
-
-        if(!boundedbox.tagged){
-          context.beginPath();
-          context.rect(boxCoordinates.left_c, boxCoordinates.top_c, boxCoordinates.f_width, boxCoordinates.f_height);
-          context.lineWidth = 2;
-          context.strokeStyle = 'black';
-          context.stroke();
-        }else{
+        context.beginPath();
+        context.rect(boxCoordinates.left_c, boxCoordinates.top_c, boxCoordinates.f_width, boxCoordinates.f_height);
+        context.lineWidth = 2;
+        context.strokeStyle = 'black';
+        context.stroke();
+        
+        if(boundedbox.tagged){
+          debugger;
           context.font = "20px Arial";
           context.fillStyle = "red";
-          context.fillText(boundedbox.name, boxCoordinates.left_c, boxCoordinates.top_c);
+          context.fillText(boundedbox.userName, boxCoordinates.left_c, boxCoordinates.top_c);
+          
         }
        
     });
@@ -293,13 +300,15 @@ export class DashBoardComponent implements OnInit {
         y: e.pageY,
       }
 
-      // let context = targetCanvas.getContext('2d');
-      // context.beginPath();
+      console.log(clickedMouse);
 
-      // context.rect(clickedPos.x, clickedPos.y, 20, 40);
-      // context.lineWidth = 2;
-      // context.strokeStyle = 'black';
-      // context.stroke();
+      let context = targetCanvas.getContext('2d');
+      context.beginPath();
+
+      context.rect(clickedPos.x, clickedPos.y, 20, 40);
+      context.lineWidth = 2;
+      context.strokeStyle = 'black';
+      context.stroke();
 
       function isIntersect(pos, rectangle) {
         return pos.y > rectangle.top_c && pos.y < rectangle.top_c + rectangle.f_height && pos.x > rectangle.left_c && pos.x < rectangle.left_c + rectangle.f_width;
@@ -310,18 +319,17 @@ export class DashBoardComponent implements OnInit {
 
       image["boundedBox"].forEach(image => {
       
-      console.log("Face Details", image)
+          console.log("Face Details", image)
+          let boxCoordinates = this.getBoxCoordinates(image, img);
 
-      let boxCoordinates = this.getBoxCoordinates(image, img);
-        if (isIntersect(clickedPos, boxCoordinates) && !image.tagged) {
-          let imageDetails = {
-            position: clickedMouse,
-            faceId: image.faceId
+          if (isIntersect(clickedPos, boxCoordinates)) {
+            let imageDetails = {
+              position: clickedMouse,
+              faceId: image.faceId
+            }
+            this.createComponent(imageDetails);
           }
-          this.createComponent(imageDetails);
-        }else{
-          this.container.clear();
-        }
+
       })
 
     });
