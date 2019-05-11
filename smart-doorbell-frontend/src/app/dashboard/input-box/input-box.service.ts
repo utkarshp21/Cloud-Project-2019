@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-// import { HttpClient } from '@angular/common/http'; 
+import { HttpClient, HttpHeaders } from '@angular/common/http'; 
 
 @Injectable({
   providedIn: 'root',
@@ -7,13 +7,16 @@ import { Injectable } from '@angular/core';
 
 export class InputBoxService {
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
-  tagImage(tagQuery) {
-      return tagQuery
-    // return this.httpClient.post('https://3o2tard9ia.execute-api.us-east-1.amazonaws.com/beta/v1/chatbot/', {
-    //   "userQuery": userQuery
-    // })
+  tagImage(tagQuery,idToken) {
+    
+    const headers = new HttpHeaders(
+      {
+        'Authorization': idToken,
+      });
+
+    return this.http.post(' https://1948nn5cp0.execute-api.us-east-1.amazonaws.com/dev/v1/tag', tagQuery, { headers })
   }
 
 }

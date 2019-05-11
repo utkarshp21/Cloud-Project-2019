@@ -25,20 +25,7 @@
 </form>
 
 <div class="row">
-  <!-- <div class="col-sm-4" *ngFor="let image of survilanceImages; let i = index">
-
-    <div class="card">
-      <img class="card-img-top" [id]="'image-'+image.src" (load)="makeCanvasRect(image)" [src]="image.src" style="display: none" alt="Card image cap" >
-      <canvas [id]="'canvas-'+image.src" width="446" height="334"></canvas>
-      <div class="card-body">
-        <h5 class="card-title">27/06/2019</h5>
-        <p class="card-text">Thursday 5:00pm</p>
-        <p>Group: Family</p>
-        <p class="card-text"><small class="text-muted">Tagged 27/06/2019</small></p>
-      </div>
-    </div>
-  </div> -->
-
+ 
   <div class="col-sm-4" *ngFor="let image of dashBoardImages | keyvalue">
 
     <div class="card">
@@ -46,13 +33,13 @@
         style="display: none" alt="Card image cap">
       <canvas [id]="'canvas-'+image.key" width="446" height="334"></canvas>
       <div class="card-body">
-        <h5 class="card-title">27/06/2019</h5>
-        <p class="card-text">Thursday 5:00pm</p>
-        <p>Group: Family</p>
+        <h5 class="card-title">{{image.value.timestamp | date:'h:mm:ss a, MMM d y'}}</h5>
+        <!-- <p class="card-text">{{image.value.timestamp}}</p> -->
+        <!-- <p>Group: Family</p> -->
+        
+        <p><span>Tagged Faces: </span>{{getFaces(image.value.bounding_box)}}</p>
         <p class="card-text"><small class="text-muted">Tagged 27/06/2019</small></p>
       </div>
     </div>
-
-    <!-- <h1>{{item.key}}</h1> -->
   </div>
 </div>

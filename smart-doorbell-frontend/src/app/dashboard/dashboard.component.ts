@@ -30,203 +30,48 @@ export class DashBoardComponent implements OnInit {
 
     this.componentRef.instance.imageDetails = imageDetails;
 
-    this.componentRef.instance.output.subscribe(event => console.log(event));
+    this.componentRef.instance.tagOutput.subscribe(event => {
+      this.container.clear();
+      this.onFilterSearch();
+      // this.refreshImageData(event);
+    });
 
   }
 
+  // refreshImageData(tagDetails){
+  //     for (let image in this.dashBoardImages) {
+  //       console.log(this.dashBoardImages[image])
+  //       this.dashBoardImages[image]["bounding_box"].forEach((box, index) => {
+  //         if (box.userId == tagDetails.faceId){
+  //           console.log(image, this.dashBoardImages);
+  //           box["userName"] = tagDetails.tag;
+  //           this.dashBoardImages[image]["bounding_box"][index] = box;
+  //           debugger;
+  //         }
+  //       });
+  //     }
+  // }
   ngOnDestroy() {
     if(this.componentRef){
       this.componentRef.destroy();
     }
   }
 
-  filter = new Filter("Utkarsh", Date.now(), Date.now());
+  filter = new Filter("", "", "");
 
   onFilterSearch(){
     this.dashboardService.filterImages(Object.assign({}, this.filter), this.user.idToken).subscribe(data => {
         this.dashBoardImages = data.body;
-        debugger;
+        // debugger;
     });
   }
 
   title = 'Chat Bot';
   user: User;
 
-  survilanceImages = [
-    {
-      src:"../../assets/images/my.jpeg",
-      boundedBox:[{
-        "faceId":123,
-        "tagged":false,
-        "name":"Don't know",
-        "Width": 0.16857413947582245,
-        "Height": 0.34200599789619446,
-        "Left": 0.18879032135009766,
-        "Top": 0.2254735231399536
-      },{
-        "faceId": 124,
-        "tagged":true,
-        "name": "Don't know",
-        "Width": 0.18640722334384918,
-        "Height": 0.4353622496128082,
-        "Left": 0.4885527789592743,
-        "Top": 0.11046215891838074
-      }]
-    },
-    {
-      src: "../../assets/images/my2.jpeg",
-      boundedBox: [{
-        "faceId": 123123,
-        "tagged": true,
-        "name": "Don't know",
-        "Width": 0.16857413947582245,
-        "Height": 0.34200599789619446,
-        "Left": 0.18879032135009766,
-        "Top": 0.2254735231399536
-      }, {
-        "faceId": 123123,
-        "tagged": false,
-        "Width": 0.18640722334384918,
-        "Height": 0.4353622496128082,
-        "Left": 0.4885527789592743,
-        "Top": 0.11046215891838074
-      }]
-    },
-    {
-      src: "../../assets/images/my3.jpeg",
-      boundedBox: [{
-        "faceId": 123123,
-        "tagged": true,
-        "name": "Don't know",
-        "Width": 0.16857413947582245,
-        "Height": 0.34200599789619446,
-        "Left": 0.18879032135009766,
-        "Top": 0.2254735231399536
-      }, {
-        "faceId": 123123,
-        "tagged": false,
-        "Width": 0.18640722334384918,
-        "Height": 0.4353622496128082,
-        "Left": 0.4885527789592743,
-        "Top": 0.11046215891838074
-      }]
-    },
-    {
-      src: "../../assets/images/my4.jpeg",
-      boundedBox: [{
-        "faceId": 123123,
-        "tagged": true,
-        "name": "Don't know",
-        "Width": 0.16857413947582245,
-        "Height": 0.34200599789619446,
-        "Left": 0.18879032135009766,
-        "Top": 0.2254735231399536
-      }, {
-        "faceId": 123123,
-        "tagged": false,
-        "Width": 0.18640722334384918,
-        "Height": 0.4353622496128082,
-        "Left": 0.4885527789592743,
-        "Top": 0.11046215891838074
-      }]
-    },
-    {
-      src: "../../assets/images/my5.jpeg",
-      boundedBox: [{
-        "faceId": 123123,
-        "tagged": true,
-        "name": "Don't know",
-        "Width": 0.16857413947582245,
-        "Height": 0.34200599789619446,
-        "Left": 0.18879032135009766,
-        "Top": 0.2254735231399536
-      }, {
-        "faceId": 123123,
-        "tagged": false,
-        "Width": 0.18640722334384918,
-        "Height": 0.4353622496128082,
-        "Left": 0.4885527789592743,
-        "Top": 0.11046215891838074
-      }]
-    },
-    {
-      src: "../../assets/images/my6.jpeg",
-      boundedBox: [{
-        "faceId": 123123,
-        "tagged": true,
-        "name": "Don't know",
-        "Width": 0.16857413947582245,
-        "Height": 0.34200599789619446,
-        "Left": 0.18879032135009766,
-        "Top": 0.2254735231399536
-      }, {
-        "faceId": 123123,
-        "tagged": false,
-        "Width": 0.18640722334384918,
-        "Height": 0.4353622496128082,
-        "Left": 0.4885527789592743,
-        "Top": 0.11046215891838074
-      }]
-    },
-    {
-      src: "../../assets/images/my7.jpeg",
-      boundedBox: [{
-        "faceId": 123123,
-        "tagged": true,
-        "name": "Don't know",
-        "Width": 0.16857413947582245,
-        "Height": 0.34200599789619446,
-        "Left": 0.18879032135009766,
-        "Top": 0.2254735231399536
-      }, {
-        "faceId": 123123,
-        "tagged": false,
-        "Width": 0.18640722334384918,
-        "Height": 0.4353622496128082,
-        "Left": 0.4885527789592743,
-        "Top": 0.11046215891838074
-      }]
-    },
-    {
-      src: "../../assets/images/my8.jpeg",
-      boundedBox: [{
-        "faceId": 123123,
-        "tagged": true,
-        "name": "Don't know",
-        "Width": 0.16857413947582245,
-        "Height": 0.34200599789619446,
-        "Left": 0.18879032135009766,
-        "Top": 0.2254735231399536
-      }, {
-        "faceId": 123123,
-        "tagged": false,
-        "Width": 0.18640722334384918,
-        "Height": 0.4353622496128082,
-        "Left": 0.4885527789592743,
-        "Top": 0.11046215891838074
-      }]
-    },
-    {
-      src: "../../assets/images/my9.jpeg",
-      boundedBox: [{
-        "faceId": 123123,
-        "tagged": true,
-        "name": "Don't know",
-        "Width": 0.16857413947582245,
-        "Height": 0.34200599789619446,
-        "Left": 0.18879032135009766,
-        "Top": 0.2254735231399536
-      }, {
-        "faceId": 123123,
-        "tagged": false,
-        "Width": 0.18640722334384918,
-        "Height": 0.4353622496128082,
-        "Left": 0.4885527789592743,
-        "Top": 0.11046215891838074
-      }]
-    }
-  ]
-
+  getFaces(boundingBox){
+    return boundingBox.map(e => e.userName).join(",")
+  }
 
   ngOnInit() {
     Auth.currentSession().then(session => {
@@ -237,7 +82,8 @@ export class DashBoardComponent implements OnInit {
         cognitoId: session.getIdToken().payload['sub'],
         idToken: session.getIdToken().jwtToken
       };
-     
+      
+      this.onFilterSearch();
       console.log(this.user);
 
     });
@@ -273,9 +119,8 @@ export class DashBoardComponent implements OnInit {
         context.lineWidth = 2;
         context.strokeStyle = 'black';
         context.stroke();
-        
+
         if(boundedbox.tagged){
-          debugger;
           context.font = "20px Arial";
           context.fillStyle = "red";
           context.fillText(boundedbox.userName, boxCoordinates.left_c, boxCoordinates.top_c);
@@ -325,7 +170,8 @@ export class DashBoardComponent implements OnInit {
           if (isIntersect(clickedPos, boxCoordinates)) {
             let imageDetails = {
               position: clickedMouse,
-              faceId: image.faceId
+              faceId: image.userId,
+              idToken:this.user.idToken
             }
             this.createComponent(imageDetails);
           }

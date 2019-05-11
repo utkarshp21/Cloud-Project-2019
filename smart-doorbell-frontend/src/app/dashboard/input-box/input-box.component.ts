@@ -13,14 +13,19 @@ export class InputBoxComponent {
   @Input() imageDetails;
   
   name:string;
-  @Output() output = new EventEmitter();
+  tag:string;
+
+  @Output() tagOutput = new EventEmitter();
   
   constructor(private inputBoxService: InputBoxService) { 
   }
 
   onSubmit(){
-    let test = this.inputBoxService.tagImage({ tag: "hi", userId: this.imageDetails.faceId })
-    debugger;
+    
+    this.inputBoxService.tagImage({ tag: this.tag, faceId: this.imageDetails.faceId }, this.imageDetails.idToken).subscribe(data => {
+      this.tagOutput.next(data.body.result);
+    });
+
     // .subscribe(data => {
     //   debugger;
     // });
