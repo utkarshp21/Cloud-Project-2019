@@ -3,7 +3,8 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
 import cv2
-
+import datetime
+import os
 #S3
 import boto3
 s3 = boto3.client('s3')
@@ -15,7 +16,9 @@ camera.resolution = (640, 480)
 camera.framerate = 32
 rawCapture = PiRGBArray(camera, size=(640, 480))
  
-
+num_face = 0
+flicker_ctr = 0
+image_ctr = 0
 from PIL import Image
 from io import BytesIO
 
@@ -33,21 +36,22 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# and occupied/unoccupied text
 	
 	image = frame.array
+	yuv = cv2.cvtColor(image,cv2.COLOR_BGR2YUV)
+	yuv[:,:,0] = cv2.equalizeHist(yuv[:,:,0])
+	image = cv2.cvtColor(yuv,cv2.COLOR_YUV2BGR)
+	disp_image = image.copy()
+		#yuv = cv2.cvtColor(image,cv2.COLOR_BGR2YUV)
+		#yuv[:,:,0] = cv2.equalizeHist(yuv[:,:,0])
+		#image = cv2.cvtColor(yuv,cv2.YUV2BGR)
 
 	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-	faces = face_cascade.detectMultiScale(
-		gray,
-		scaleFactor=1.1,
-		minNeighbors=5,
-		minSize=(30, 30),
-		flags=cv2.CASCADE_SCALE_IMAGE
-	)
+	faces = face_cascade.detectMultiScale( gray,1.3,5)
 
 	# Draw a rectangle around the faces
 	
 	for (x, y, w, h) in faces:
-		cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
+		 	cv2.rectangle(disp_image, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
 	# cv2.imwrite('newobama.png', image)
 
@@ -58,18 +62,17 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	# 	# out_img.seek(0)
 	# 	# s3.put_object(Bucket="surveillance-cam", Key = imageName, Body = out_img, ContentType= 'image/png')	
 
-	if num_faces < len(faces):
+	if num_face != len(faces):
 		flicker_ctr += 1
-   
-	if(len(faces) == 0):
+	else:
 		flicker_ctr = 0
-		num_faces = 0
 
-	if num_faces != len(faces):
-		if flicker_ctr > 20:
+
+	if flicker_ctr > 5:
 			# snap pic
-			imagePath = "./collectedImages/"
-			imageName = str(time.strftime("%Y_%m_%d_%H_%M")) + '.png'
+		user = "aa6911"
+		imagePath = "./collectedImages/"
+		imageName = user+"/"+ str(time.time()).split(".")[0] + '.png'
 			# cv2.imwrite(imageName, image)
 
 			#one way
@@ -80,16 +83,24 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 			# s3.put_object(Bucket="surveillance-cam", Key = imageName, Body = out_img, ContentType= 'image/png')	
 
 			#otherway
-			cv2.imwrite(imagePath+imageName, image)
-			local_image = open(imagePath+imageName, 'rb')
-			# s3.put_object(Bucket="surveillance-cam", Key = imageName, Body = local_image, ContentType= 'image/png')	
+		print(imageName,imagePath + user,imagePath + imageName)
+		if not os.path.exists(imagePath+user):
+			os.makedirs(imagePath+user)
+		cv2.imwrite(imagePath + imageName , image)
+		
+		local_image = open(imagePath + imageName, 'rb')
+
+		s3.put_object(Bucket="surveillance-cam", Key = imageName, Body = local_image, ContentType= 'image/png')	
 
 	
-			num_faces = len(faces)
+		image_ctr +=1
+		num_face = len(faces)
+		flicker_ctr = 0
+	print("Num_faces",num_face)
+	print("Flicker",flicker_ctr)
 
-
-	# show the frame
-	cv2.imshow("Frame", image)
+		# show the frame
+	cv2.imshow("Frame", disp_image)
 	key = cv2.waitKey(1) & 0xFF
  
 	# clear the stream in preparation for the next frame
