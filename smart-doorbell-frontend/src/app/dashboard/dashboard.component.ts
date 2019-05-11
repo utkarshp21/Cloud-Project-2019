@@ -31,9 +31,11 @@ export class DashBoardComponent implements OnInit {
     this.componentRef.instance.imageDetails = imageDetails;
 
     this.componentRef.instance.tagOutput.subscribe(event => {
+      if(event != "error"){
+        this.onFilterSearch();
+      // this.refreshImageData(event)
+      }
       this.container.clear();
-      this.onFilterSearch();
-      // this.refreshImageData(event);
     });
 
   }
@@ -57,7 +59,7 @@ export class DashBoardComponent implements OnInit {
     }
   }
 
-  filter = new Filter("", "", "");
+  filter = new Filter();
 
   onFilterSearch(){
     this.dashboardService.filterImages(Object.assign({}, this.filter), this.user.idToken).subscribe(data => {
@@ -70,6 +72,8 @@ export class DashBoardComponent implements OnInit {
   user: User;
 
   getFaces(boundingBox){
+    // console.log(boundingBox.map(e => e.userName));
+    // console.log("Image");
     return boundingBox.map(e => e.userName).join(",")
   }
 
@@ -80,7 +84,7 @@ export class DashBoardComponent implements OnInit {
         email: session.getIdToken().payload['email'],
         phone_number: session.getIdToken().payload['phone_number'],
         cognitoId: session.getIdToken().payload['sub'],
-        idToken: session.getIdToken().jwtToken
+        idToken: session.getIdToken()["jwtToken"]
       };
       
       this.onFilterSearch();
@@ -155,6 +159,7 @@ export class DashBoardComponent implements OnInit {
       context.strokeStyle = 'black';
       context.stroke();
 
+
       function isIntersect(pos, rectangle) {
         return pos.y > rectangle.top_c && pos.y < rectangle.top_c + rectangle.f_height && pos.x > rectangle.left_c && pos.x < rectangle.left_c + rectangle.f_width;
       }
@@ -162,12 +167,15 @@ export class DashBoardComponent implements OnInit {
       console.log("Faces");
       console.log("Image clicked", img);
 
+      let boxCliked = false;
+
       image["boundedBox"].forEach(image => {
       
           console.log("Face Details", image)
           let boxCoordinates = this.getBoxCoordinates(image, img);
 
           if (isIntersect(clickedPos, boxCoordinates)) {
+            boxCliked = true;
             let imageDetails = {
               position: clickedMouse,
               faceId: image.userId,
@@ -177,6 +185,10 @@ export class DashBoardComponent implements OnInit {
           }
 
       })
+
+      if (!boxCliked && this.componentRef){
+        this.componentRef.destroy();
+      }
 
     });
 

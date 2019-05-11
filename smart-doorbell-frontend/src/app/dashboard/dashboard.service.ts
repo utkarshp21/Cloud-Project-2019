@@ -9,7 +9,7 @@ export class DashboardService {
 
     constructor(private http: HttpClient) { }
 
-    filterImages(searchQuery, token) {
+    filterImages(searchQuery, token): any{
 
         if (searchQuery.toDate) {
             searchQuery.toDate = (new Date(searchQuery.toDate)).getTime() / 1000;

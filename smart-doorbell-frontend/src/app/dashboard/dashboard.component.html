@@ -33,7 +33,7 @@
         style="display: none" alt="Card image cap">
       <canvas [id]="'canvas-'+image.key" width="446" height="334"></canvas>
       <div class="card-body">
-        <h5 class="card-title">{{image.value.timestamp | date:'h:mm:ss a, MMM d y'}}</h5>
+        <h5 class="card-title">{{image.value.timestamp*1000 | date:'h:mm:ss a, MMM d y'}}</h5>
         <!-- <p class="card-text">{{image.value.timestamp}}</p> -->
         <!-- <p>Group: Family</p> -->
         

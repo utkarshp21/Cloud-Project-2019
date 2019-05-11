@@ -21,11 +21,13 @@ export class InputBoxComponent {
   }
 
   onSubmit(){
-    
-    this.inputBoxService.tagImage({ tag: this.tag, faceId: this.imageDetails.faceId }, this.imageDetails.idToken).subscribe(data => {
-      this.tagOutput.next(data.body.result);
-    });
-
+    if(this.tag){
+      this.inputBoxService.tagImage({ tag: this.tag, faceId: this.imageDetails.faceId }, this.imageDetails.idToken).subscribe(data => {
+        this.tagOutput.next((<any>data).body.result);
+      });
+    }else{
+      this.tagOutput.next("error");
+    }
     // .subscribe(data => {
     //   debugger;
     // });
