@@ -98,4 +98,5 @@ def index_face(collection_id, bucket_name, bucket_file_name):
     if len(response['FaceRecords']) > 0:
         return response['FaceRecords']
     else:
+        print("No Faces Found in image")
         return None

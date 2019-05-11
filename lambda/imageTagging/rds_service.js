@@ -53,6 +53,6 @@ module.exports.tagSurveillanceImages = async function (faceID, tag) {
 };
 
 function buildSqlQuery(faceID,tag) {
-    let sql = `update users_cc_proj SET user_name="${tag}" where user_id="${faceID}"`;
+    let sql = `update users_cc_proj SET user_name="${tag}", tagged = 1 where user_id="${faceID}"`;
     return sql;
 }
