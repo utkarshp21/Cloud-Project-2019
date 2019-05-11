@@ -144,20 +144,24 @@ export class DashBoardComponent implements OnInit {
         y: e.clientY - rect.top
       };
 
+      clickedPos.x = (clickedPos.x / rect.width) * 640
+      clickedPos.y = (clickedPos.y / rect.height) * 480
+
       const clickedMouse = {
         x: e.pageX,
         y: e.pageY,
       }
 
+  
       console.log(clickedMouse);
 
-      let context = targetCanvas.getContext('2d');
-      context.beginPath();
+      // let context = targetCanvas.getContext('2d');
+      // context.beginPath();
 
-      context.rect(clickedPos.x, clickedPos.y, 20, 40);
-      context.lineWidth = 2;
-      context.strokeStyle = 'black';
-      context.stroke();
+      // context.rect(clickedPos.x, clickedPos.y, 20, 40);
+      // context.lineWidth = 2;
+      // context.strokeStyle = 'red';
+      // context.stroke();
 
 
       function isIntersect(pos, rectangle) {
@@ -174,7 +178,7 @@ export class DashBoardComponent implements OnInit {
           console.log("Face Details", image)
           let boxCoordinates = this.getBoxCoordinates(image, img);
 
-          if (isIntersect(clickedPos, boxCoordinates)) {
+        if (isIntersect(clickedPos, boxCoordinates)) {
             boxCliked = true;
             let imageDetails = {
               position: clickedMouse,
