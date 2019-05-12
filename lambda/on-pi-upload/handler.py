@@ -47,17 +47,17 @@ def uploadPiImages(event, context):
     # rekognition_service.delete_collection(collection_id)
     # rekognition_service.create_collection(collection_id)
     
-    bucket_name = "surveillance-cam"
-    bucket_key = "aa6911/up1.png"
-    # bucket_name = event['Records'][0]['s3']['bucket']['name']
-    # bucket_key = event["Records"][0]["s3"]["object"]["key"]
+    # bucket_name = "surveillance-cam"
+    # bucket_key = "aa6911/aws_1.jpg"
+    bucket_name = event['Records'][0]['s3']['bucket']['name']
+    bucket_key = event["Records"][0]["s3"]["object"]["key"]
     print("Received bucket name[%s], bucket key[%s]" % (bucket_name, bucket_key))
     ts = str(time.time()).split(".")[0]
     print("Timestamp - " + ts)
     response = index_image(bucket_name, bucket_key, collection_id, ts)
     if response is not None:
         recipient = "ashim.agg93@gmail.com"
-        # notification_service.send_email_with_s3(recipient, "User name", bucket_name, bucket_key)
+        notification_service.send_email_with_s3(recipient, "User name", bucket_name, bucket_key)
     response = {
         "statusCode": 200,
         "body": "Success"
