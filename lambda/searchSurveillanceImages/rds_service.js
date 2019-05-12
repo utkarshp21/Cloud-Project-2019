@@ -80,5 +80,13 @@ function build_response(results){
         let userDetails = response_json[s3_path].bounding_box;
         userDetails.push(userDetail); 
     });
-    return response_json;
+    let response_arr = [];
+    for (let s3_path in response_json) { 
+        let item = response_json[s3_path];
+        let obj = {'s3_path' : s3_path, 'timestamp' : item['timestamp'], 
+        'bounding_box' :  item['bounding_box']};
+        response_arr.push(obj);
+    }
+    response_arr.sort((a,b) => (a.timestamp > b.timestamp) ? -1 : ((b.timestamp > a.timestamp) ? 1 : 0)); 
+    return response_arr;
 }
