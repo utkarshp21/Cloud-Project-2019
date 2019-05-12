@@ -45,7 +45,7 @@ module.exports.getSurveillanceImages = async function (from_date, to_date, user_
 function build_sql_query(from_date, to_date, user_name){
     
     if (!from_date) {
-        from_date = 1
+        from_date = 1;
     }
     let sql = `select * from admin.images_cc_proj a inner join admin.users_cc_proj b 
                 ON a.user_id = b.user_id where inserted_time > ${from_date}`;
@@ -53,7 +53,8 @@ function build_sql_query(from_date, to_date, user_name){
         sql += ` and inserted_time < ${to_date}`;    
     }
     if (user_name){
-        sql += ` and user_name LIKE "%${user_name}%"`; 
+        sql += ` and s3_path in (select s3_path from admin.images_cc_proj where user_id in
+        (select user_id from admin.users_cc_proj where user_name LIKE "%${user_name}%"))`; 
     }
     sql += ` order by inserted_time`; 
     console.log("Returning query - " + sql);                
