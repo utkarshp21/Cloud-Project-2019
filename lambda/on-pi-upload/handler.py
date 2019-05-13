@@ -48,10 +48,10 @@ def uploadPiImages(event, context):
     # rekognition_service.delete_collection(collection_id)
     # rekognition_service.create_collection(collection_id)
     
-    bucket_name = "surveillance-cam"
-    bucket_key = "aa6911/1557583951.png"
-    # bucket_name = event['Records'][0]['s3']['bucket']['name']
-    # bucket_key = event["Records"][0]["s3"]["object"]["key"]
+    # bucket_name = "surveillance-cam"
+    # bucket_key = "aa6911/1557583951.png"
+    bucket_name = event['Records'][0]['s3']['bucket']['name']
+    bucket_key = event["Records"][0]["s3"]["object"]["key"]
     print("Received bucket name[%s], bucket key[%s]" % (bucket_name, bucket_key))
     timestamp = str(time.time()).split(".")[0]
     print("Timestamp[%s] " % timestamp)
