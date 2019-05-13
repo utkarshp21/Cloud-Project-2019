@@ -43,12 +43,12 @@ def put_face_record(face_id, user_id, s3_path, owner_id, bounding_box_str, inser
     conn.commit()       
     print("Insertion for Face Record Done")
 
-def put_user_record(user_id, device_owner_id, user_name):
+def put_user_record(user_id, device_owner_id, tagged, user_name):
 
     print("Inserting User Record[" + user_id + "] for owner[" + device_owner_id + "]")
     conn = getConn()
     sql = 'insert into users_cc_proj (user_id, owner_id, tagged, user_name)' \
-    + 'values("%s", "%s", false, "%s")' % (user_id, device_owner_id, user_name)
+    + 'values("%s", "%s", %s, "%s")' % (user_id, device_owner_id, tagged, user_name)
     with conn.cursor() as cur:
         cur.execute(sql)
     conn.commit()
