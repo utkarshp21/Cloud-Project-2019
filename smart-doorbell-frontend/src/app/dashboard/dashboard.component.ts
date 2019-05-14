@@ -21,9 +21,8 @@ export class DashBoardComponent implements OnInit {
   @ViewChild("alertContainer", { read: ViewContainerRef }) container;
   componentRef: ComponentRef<any>;
   dashBoardImages:Array<any>;
-  modalRef;
+  imageModalRef;
   imgURL;
-  selectedImageFile:File = null
 
   constructor(private modalService: BsModalService,private dashboardService: DashboardService, private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
 
@@ -47,18 +46,18 @@ export class DashBoardComponent implements OnInit {
   }
   
   openImageUploadModal(imageModal: TemplateRef<any>) {
-    this.modalRef = this.modalService.show(imageModal);
+    this.imageModalRef = this.modalService.show(imageModal);
   }
 
   imagetag = new imageTag();
 
   onFaceImageSelected(event){
-
-    this.selectedImageFile = <File>event.target.files[0];
+   
+    this.imagetag.image = <File>event.target.files[0];; 
 
     var reader = new FileReader();
 
-    reader.readAsDataURL(this.selectedImageFile);
+    reader.readAsDataURL(this.imagetag.image);
 
     reader.onload = (_event) => {
       this.imgURL = reader.result;
@@ -67,13 +66,22 @@ export class DashBoardComponent implements OnInit {
   }
 
   onFaceUpload(){
-  
-    this.imagetag.image = this.selectedImageFile; 
-    debugger;
-    this.dashboardService.uploadTaggedImage(this.imagetag, this.user.idToken).subscribe(data => {
-     debugger;
-      // debugger;
-    });;
+
+    if (this.imagetag.tag && this.imagetag.image) {
+      this.dashboardService.uploadTaggedImage(this.imagetag, this.user.idToken).subscribe(data => {
+         this.imageModalRef.hide();
+         this.imagetag = new imageTag();
+         this.imgURL= null;
+         this.onFilterSearch();
+      },err => {
+        if (err.status == 401) {
+          this.signOut();
+        }
+      });
+    } else {
+      alert("Please Select Image and Tag")
+    }
+
   }
 
   // refreshImageData(tagDetails){
@@ -98,9 +106,18 @@ export class DashBoardComponent implements OnInit {
   filter = new Filter();
 
   onFilterSearch(){
-    this.dashboardService.filterImages(Object.assign({}, this.filter), this.user.idToken).subscribe(data => {
+    this.dashboardService.filterImages(Object.assign({}, this.filter), this.user.idToken).subscribe(
+      data => {
         this.dashBoardImages = data.body;
-    });
+          if (!this.dashBoardImages.length){
+            alert("No Images with the given filter");
+          }
+      },
+      err => {
+        if (err.status == 401){
+          this.signOut();
+        }
+      });
   }
 
   title = 'Chat Bot';

@@ -22,23 +22,27 @@
   
   <button type="submit" class="btn btn-primary">Filter</button>
 
-  <button type="button" class="btn btn-primary" (click)="openImageUploadModal(imageModal)">Upload new face</button>
+  <button type="button" class="btn btn-primary ml-2" (click)="openImageUploadModal(imageModal)">Upload new face</button>
 
 </form>
 
 <ng-template #imageModal>
   <div class="modal-header">
     <h4 class="modal-title pull-left">Upload New Face</h4>
-    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+    <button type="button" class="close pull-right" aria-label="Close" (click)="imageModalRef.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    <form (ngSubmit)="onFaceUpload()">
-        <input type="file"  name="file" (change)="onFaceImageSelected($event)">
-        <input type="text"  name="text" [(ngModel)]="imagetag.tag" >
-        <img [src]="imgURL" height="200" *ngIf="imgURL">
-        <button type="submit" class="btn btn-primary" (click)="openImageUploadModal(imageModal)">Upload new face</button>
+    <form (ngSubmit)="onFaceUpload()" name="tagForm" >
+        <input type="file"  name="file" required (change)="onFaceImageSelected($event)">
+        <br><br>
+        <label for="tahInput">Tag Name:</label>
+        <input id="tahInput"  type="text"  name="text" required [(ngModel)]="imagetag.tag" >
+        <br><br>
+        <img [src]="imgURL" height="200" width="200" *ngIf="imgURL">
+        <br><br>
+        <button type="submit" class="btn btn-primary">Submit Tag</button>
     </form>
   </div>
 </ng-template>
