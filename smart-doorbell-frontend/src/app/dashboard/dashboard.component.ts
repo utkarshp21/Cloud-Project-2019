@@ -1,25 +1,31 @@
-import { Component, OnInit, ComponentFactory, ComponentRef, ComponentFactoryResolver, ViewContainerRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef,OnInit, ComponentFactory, ComponentRef, ComponentFactoryResolver, ViewContainerRef, ViewChild } from '@angular/core';
 import { AmplifyService } from 'aws-amplify-angular';
 import { Auth } from 'aws-amplify';
 import { Router } from '@angular/router';
 import User from './types/user';
 import { Filter } from './types/filter';
+import { imageTag} from './types/imageTag';
 
 import { InputBoxComponent } from './input-box/input-box.component';
 import { DashboardService } from './dashboard.service';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
+
 export class DashBoardComponent implements OnInit {
 
   @ViewChild("alertContainer", { read: ViewContainerRef }) container;
   componentRef: ComponentRef<any>;
   dashBoardImages:Array<any>;
+  modalRef;
+  imgURL;
+  selectedImageFile:File = null
 
-  constructor(private dashboardService: DashboardService, private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
+  constructor(private modalService: BsModalService,private dashboardService: DashboardService, private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
 
   createComponent(imageDetails) {
     
@@ -38,6 +44,36 @@ export class DashBoardComponent implements OnInit {
       this.container.clear();
     });
 
+  }
+  
+  openImageUploadModal(imageModal: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(imageModal);
+  }
+
+  imagetag = new imageTag();
+
+  onFaceImageSelected(event){
+
+    this.selectedImageFile = <File>event.target.files[0];
+
+    var reader = new FileReader();
+
+    reader.readAsDataURL(this.selectedImageFile);
+
+    reader.onload = (_event) => {
+      this.imgURL = reader.result;
+    }
+
+  }
+
+  onFaceUpload(){
+  
+    this.imagetag.image = this.selectedImageFile; 
+    debugger;
+    this.dashboardService.uploadTaggedImage(this.imagetag, this.user.idToken).subscribe(data => {
+     debugger;
+      // debugger;
+    });;
   }
 
   // refreshImageData(tagDetails){
@@ -64,7 +100,6 @@ export class DashBoardComponent implements OnInit {
   onFilterSearch(){
     this.dashboardService.filterImages(Object.assign({}, this.filter), this.user.idToken).subscribe(data => {
         this.dashBoardImages = data.body;
-        // debugger;
     });
   }
 

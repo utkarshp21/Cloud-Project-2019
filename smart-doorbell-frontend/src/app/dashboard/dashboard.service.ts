@@ -24,7 +24,19 @@ export class DashboardService {
                 'Authorization': token,
             });
 
+        
+
         return this.http.post(' https://1948nn5cp0.execute-api.us-east-1.amazonaws.com/dev/v1/search', searchQuery, {headers} )
+    }
+
+    uploadTaggedImage(taggedImage,token):any{
+        const headers = new HttpHeaders(
+            {
+                'Authorization': token,
+                'x-amz-meta-tag':taggedImage.tag
+            });
+        debugger;
+        return this.http.post('https://1948nn5cp0.execute-api.us-east-1.amazonaws.com/dev/v1/upload/surveillance-cam/'+taggedImage.image.name, taggedImage.image, { headers })
     }
 
 }
