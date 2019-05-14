@@ -67,7 +67,7 @@ def uploadPiImages(event, context):
         user_name = response['Metadata'][metadata_field]
     print("User Name Received[%s]" % user_name)
     response =  index_image(bucket_name, bucket_key, collection_id, timestamp, tagged, user_name, tagged_by)
-    if response is not None:
+    if not tagged and response is not None:
         recipient = "ashim.agg93@gmail.com"
         notification_service.send_email_with_s3(recipient, "User name", bucket_name, bucket_key)
     response = {
