@@ -2,6 +2,8 @@
 import { Component, Input, EventEmitter, Output } from '@angular/core';
 import { positionElements } from 'ngx-bootstrap/positioning/public_api';
 import { InputBoxService } from './input-box.service';
+import { AmplifyService } from 'aws-amplify-angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-input-box',
@@ -17,13 +19,18 @@ export class InputBoxComponent {
 
   @Output() tagOutput = new EventEmitter();
   
-  constructor(private inputBoxService: InputBoxService) { 
+  constructor(private inputBoxService: InputBoxService, private amplifyService: AmplifyService, public router: Router) { 
   }
 
   onSubmit(){
     if(this.tag){
       this.inputBoxService.tagImage({ tag: this.tag, faceId: this.imageDetails.faceId }, this.imageDetails.idToken).subscribe(data => {
         this.tagOutput.next((<any>data).body.result);
+      },
+      err => {
+        if (err.status == 401) {
+          this.signOut();
+        }
       });
     }else{
       this.tagOutput.next("error");
@@ -31,6 +38,11 @@ export class InputBoxComponent {
     // .subscribe(data => {
     //   debugger;
     // });
+  }
+
+  signOut() {
+    this.amplifyService.auth().signOut();
+    this.router.navigate(['/']);
   }
 
 }

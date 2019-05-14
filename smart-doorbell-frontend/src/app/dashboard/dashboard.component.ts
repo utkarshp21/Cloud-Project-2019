@@ -1,25 +1,30 @@
-import { Component, OnInit, ComponentFactory, ComponentRef, ComponentFactoryResolver, ViewContainerRef, ViewChild } from '@angular/core';
+import { Component, TemplateRef,OnInit, ComponentFactory, ComponentRef, ComponentFactoryResolver, ViewContainerRef, ViewChild } from '@angular/core';
 import { AmplifyService } from 'aws-amplify-angular';
 import { Auth } from 'aws-amplify';
 import { Router } from '@angular/router';
 import User from './types/user';
 import { Filter } from './types/filter';
+import { imageTag} from './types/imageTag';
 
 import { InputBoxComponent } from './input-box/input-box.component';
 import { DashboardService } from './dashboard.service';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
+
 export class DashBoardComponent implements OnInit {
 
   @ViewChild("alertContainer", { read: ViewContainerRef }) container;
   componentRef: ComponentRef<any>;
   dashBoardImages:Array<any>;
+  imageModalRef;
+  imgURL;
 
-  constructor(private dashboardService: DashboardService, private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
+  constructor(private modalService: BsModalService,private dashboardService: DashboardService, private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
 
   createComponent(imageDetails) {
     
@@ -37,6 +42,45 @@ export class DashBoardComponent implements OnInit {
       }
       this.container.clear();
     });
+
+  }
+  
+  openImageUploadModal(imageModal: TemplateRef<any>) {
+    this.imageModalRef = this.modalService.show(imageModal);
+  }
+
+  imagetag = new imageTag();
+
+  onFaceImageSelected(event){
+   
+    this.imagetag.image = <File>event.target.files[0];; 
+
+    var reader = new FileReader();
+
+    reader.readAsDataURL(this.imagetag.image);
+
+    reader.onload = (_event) => {
+      this.imgURL = reader.result;
+    }
+
+  }
+
+  onFaceUpload(){
+
+    if (this.imagetag.tag && this.imagetag.image) {
+      this.dashboardService.uploadTaggedImage(this.imagetag, this.user.idToken).subscribe(data => {
+         this.imageModalRef.hide();
+         this.imagetag = new imageTag();
+         this.imgURL= null;
+         this.onFilterSearch();
+      },err => {
+        if (err.status == 401) {
+          this.signOut();
+        }
+      });
+    } else {
+      alert("Please Select Image and Tag")
+    }
 
   }
 
@@ -62,10 +106,18 @@ export class DashBoardComponent implements OnInit {
   filter = new Filter();
 
   onFilterSearch(){
-    this.dashboardService.filterImages(Object.assign({}, this.filter), this.user.idToken).subscribe(data => {
+    this.dashboardService.filterImages(Object.assign({}, this.filter), this.user.idToken).subscribe(
+      data => {
         this.dashBoardImages = data.body;
-        // debugger;
-    });
+          if (!this.dashBoardImages.length){
+            alert("No Images with the given filter");
+          }
+      },
+      err => {
+        if (err.status == 401){
+          this.signOut();
+        }
+      });
   }
 
   title = 'Chat Bot';
