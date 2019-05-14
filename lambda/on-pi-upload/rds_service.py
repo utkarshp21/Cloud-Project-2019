@@ -32,23 +32,23 @@ def get_user_id_for_image(face_id, owner_id):
     print("No Users Found")
     return None
 
-def put_face_record(face_id, user_id, s3_path, owner_id, bounding_box_str, inserted_time, tagged_time):
+def put_face_record(face_id, user_id, s3_path, owner_id, bounding_box_str, inserted_time, tagged_by):
 
     print("Inserting Face Record[%s] for user[%s], owner[%s]" % (face_id, user_id, owner_id))
     conn = getConn()
-    sql = 'insert into images_cc_proj (face_id, owner_id, user_id, s3_path, inserted_time, tagged_time, bounding_box)' \
-    + 'values("%s", "%s", "%s", "%s", %s, %s, "%s")' % (face_id, owner_id, user_id, s3_path, inserted_time, tagged_time, bounding_box_str)
+    sql = 'insert into images_cc_proj (face_id, owner_id, user_id, s3_path, inserted_time, tagged_by, bounding_box)' \
+    + 'values("%s", "%s", "%s", "%s", %s, "%s", "%s")' % (face_id, owner_id, user_id, s3_path, inserted_time, tagged_by, bounding_box_str)
     with conn.cursor() as cur:
         cur.execute(sql)        
     conn.commit()       
     print("Insertion for Face Record Done")
 
-def put_user_record(user_id, device_owner_id, tagged, user_name):
+def put_user_record(user_id, device_owner_id, tagged, user_name, timestamp):
 
     print("Inserting User Record[" + user_id + "] for owner[" + device_owner_id + "]")
     conn = getConn()
-    sql = 'insert into users_cc_proj (user_id, owner_id, tagged, user_name)' \
-    + 'values("%s", "%s", %s, "%s")' % (user_id, device_owner_id, tagged, user_name)
+    sql = 'insert into users_cc_proj (user_id, owner_id, tagged, user_name, tagged_time)' \
+    + 'values("%s", "%s", %s, "%s", %s)' % (user_id, device_owner_id, tagged, user_name, timestamp)
     with conn.cursor() as cur:
         cur.execute(sql)
     conn.commit()

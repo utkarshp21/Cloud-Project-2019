@@ -13,9 +13,9 @@ const pool = mysql.createPool({
 });
 
 
-module.exports.tagSurveillanceImages = async function (faceID, tag) {
+module.exports.tagSurveillanceImages = async function (faceID, tag, timestamp) {
 
-    console.log(`Tagging for facId [${faceID}], with tag [${tag}] `);
+    console.log(`Tagging for facId [${faceID}], with tag [${tag}], timestamp[${timestamp}] `);
     
     return new Promise((resolve, reject) => {
         pool.getConnection(function (err, connection) {
@@ -25,7 +25,7 @@ module.exports.tagSurveillanceImages = async function (faceID, tag) {
             }
             else {
                 console.log("Successfully connected to db");
-                let sqlQuery = buildSqlQuery(faceID,tag);
+                let sqlQuery = buildSqlQuery(faceID,tag, timestamp);
                 console.log(`SQL Query- ${sqlQuery}`);
 
                 connection.query(sqlQuery, function (error, results, fields) {
@@ -52,7 +52,7 @@ module.exports.tagSurveillanceImages = async function (faceID, tag) {
     });
 };
 
-function buildSqlQuery(faceID,tag) {
-    let sql = `update users_cc_proj SET user_name="${tag}", tagged = 1 where user_id="${faceID}"`;
+function buildSqlQuery(faceID,tag, timestamp) {
+    let sql = `update users_cc_proj SET user_name="${tag}", tagged = 1, tagged_time = ${timestamp} where user_id="${faceID}"`;
     return sql;
 }

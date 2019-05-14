@@ -10,7 +10,7 @@ s3_client = boto3.client('s3')
 threshold = 85
 # bucket_keys = ["asaggarw/aws_1.jpg", "asaggarw/aws_2.jpg", "aa6911/aws_1.jpg", "aa6911/aws_2.jpg", "aa6911/aws_3.jpg"]
 
-def index_image(bucket_name, bucket_key, collection_id, timestamp, tagged, user_name):
+def index_image(bucket_name, bucket_key, collection_id, timestamp, tagged, user_name, tagged_by):
     device_owner_id = bucket_key.split("/")[0]
     bucket_file_name = bucket_key.split("/")[1]
     print ('Bucket - %s' % bucket_name)
@@ -31,14 +31,14 @@ def index_image(bucket_name, bucket_key, collection_id, timestamp, tagged, user_
         if response is None:
             # create user for face and add in dynamo user table
             matched_user_id = "user-" + face_id 
-            rds_service.put_user_record(matched_user_id, device_owner_id, tagged, user_name)
+            rds_service.put_user_record(matched_user_id, device_owner_id, tagged, user_name, timestamp)
         else :
             matched_face_id = response[0]['Face']['FaceId']
             matched_user_id = rds_service.get_user_id_for_image(matched_face_id, device_owner_id)
             # if matched_user_id is None:
             #     matched_user_id = "user-" + face_id 
             #     dynamo_service.put_user_record(matched_user_id, device_owner_id) 
-        rds_service.put_face_record(face_id, matched_user_id, bucket_key, device_owner_id, bounding_box_str, timestamp, -1)
+        rds_service.put_face_record(face_id, matched_user_id, bucket_key, device_owner_id, bounding_box_str, timestamp, tagged_by)
     return True
 
 def uploadPiImages(event, context):
@@ -49,7 +49,7 @@ def uploadPiImages(event, context):
     # rekognition_service.create_collection(collection_id)
     
     # bucket_name = "surveillance-cam"
-    # bucket_key = "aa6911/1557583951.png"
+    # bucket_key = "aa6911/tanmay.jpg"
     bucket_name = event['Records'][0]['s3']['bucket']['name']
     bucket_key = event["Records"][0]["s3"]["object"]["key"]
     print("Received bucket name[%s], bucket key[%s]" % (bucket_name, bucket_key))
@@ -59,11 +59,14 @@ def uploadPiImages(event, context):
     response = s3_client.head_object(Bucket=bucket_name, Key=bucket_key)
     user_name = ""
     tagged = False
-    if 'Metadata' in response and 'user-name' in response['Metadata'] :
+    metadata_field = 'tag'
+    tagged_by = 'pi'
+    if 'Metadata' in response and metadata_field in response['Metadata'] :
         tagged = True
-        user_name = response['Metadata']['user-name']
+        tagged_by = 'owner'
+        user_name = response['Metadata'][metadata_field]
     print("User Name Received[%s]" % user_name)
-    response = index_image(bucket_name, bucket_key, collection_id, timestamp, tagged, user_name)
+    response =  index_image(bucket_name, bucket_key, collection_id, timestamp, tagged, user_name, tagged_by)
     if response is not None:
         recipient = "ashim.agg93@gmail.com"
         notification_service.send_email_with_s3(recipient, "User name", bucket_name, bucket_key)

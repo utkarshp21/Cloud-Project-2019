@@ -13,9 +13,9 @@ const pool = mysql.createPool({
 });
 
 
-module.exports.getSurveillanceImages = async function (from_date, to_date, user_name) {
+module.exports.getSurveillanceImages = async function (from_date, to_date, user_name, is_tagged) {
     
-    console.log(`Fetching results for user[${user_name}], from[${from_date}], to[${to_date}]`);
+    console.log(`Fetching results for user[${user_name}], from[${from_date}], to[${to_date}], is_tagged[${is_tagged}]`);
     return new Promise((resolve, reject) => {
         pool.getConnection(function (err, connection) {
             if (err){
@@ -24,7 +24,7 @@ module.exports.getSurveillanceImages = async function (from_date, to_date, user_
             }    
             else{
                 console.log("Successfully connected to db");
-                let sql_query = build_sql_query(from_date, to_date, user_name);
+                let sql_query = build_sql_query(from_date, to_date, user_name, is_tagged);
                 connection.query(sql_query, function (error, results, fields) {
                     connection.release();
                     if (error) {
@@ -42,15 +42,18 @@ module.exports.getSurveillanceImages = async function (from_date, to_date, user_
     });
 };
 
-function build_sql_query(from_date, to_date, user_name){
+function build_sql_query(from_date, to_date, user_name, is_tagged){
     
     if (!from_date) {
         from_date = 1;
     }
     let sql = `select * from admin.images_cc_proj a inner join admin.users_cc_proj b 
-                ON a.user_id = b.user_id where inserted_time > ${from_date}`;
+                ON a.user_id = b.user_id where tagged_by = "pi" and inserted_time > ${from_date}`;
     if (to_date) {
         sql += ` and inserted_time < ${to_date}`;    
+    }
+    if (is_tagged){
+        sql += ` and tagged = ${is_tagged}`;    
     }
     if (user_name){
         sql += ` and s3_path in (select s3_path from admin.images_cc_proj where user_id in
