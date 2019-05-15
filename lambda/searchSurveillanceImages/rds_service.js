@@ -76,6 +76,7 @@ function build_response(results){
                         "left" : bounding_box[2], 
                         "top" : bounding_box[3], 
                         "userName" : item.user_name,
+                        "taggedTime" : item.tagged_time,
                     };
         if (!(s3_path in response_json)){
             response_json[s3_path] = {'timestamp' : item.inserted_time ,'bounding_box' :[] };

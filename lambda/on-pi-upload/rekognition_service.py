@@ -100,3 +100,12 @@ def index_face(collection_id, bucket_name, bucket_file_name):
     else:
         print("No Faces Found in image")
         return None
+
+def delete_faces(collection_id, face_ids):
+    
+    client = boto3.client('rekognition')
+    #Delete a face from collection
+    print('Deleting faces from collection:' + collection_id)
+    response=client.delete_faces(CollectionId=collectionId,FaceIds=face_ids)
+    print(str(len(response['DeletedFaces'])) + ' faces deleted:') 							
+    
