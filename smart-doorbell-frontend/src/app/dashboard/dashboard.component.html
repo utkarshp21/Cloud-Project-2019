@@ -1,7 +1,12 @@
 <template #alertContainer></template>
 <br>
 
-<form (ngSubmit)="onFilterSearch()"  >
+<button type="button" class="btn btn-light d-block d-sm-none w-100" (click)="isCollapsedFilter = !isCollapsedFilter" [attr.aria-expanded]="!isCollapsed"
+  aria-controls="collapseFilters"> {{ isCollapsedFilter == true ? 'Show Filters' : 'Hide Filters' }}
+</button>
+<br>
+
+<form  id="isCollapsedFilter" [collapse]="isCollapsedFilter" (ngSubmit)="onFilterSearch()"  >
   
   <div class="d-inline-block col-xs-12 col-12 col-md-3 form-group">
     <label for="exampleInputEmail1">Person Name</label>
@@ -49,15 +54,13 @@
 
 <div class="row">
   <div class="col-sm-4" *ngFor="let image of dashBoardImages">
-
     <div class="card">
       <img class="card-img-top" [id]="'image-'+image.s3_path" (load)="makeCanvasRect({'src':image.s3_path,'boundedBox':image.bounding_box})" [src]="'https://s3.amazonaws.com/surveillance-cam/'+image.s3_path"
         style="display: none" alt="Card image cap">
       <canvas [id]="'canvas-'+image.s3_path" ></canvas>
       <div class="card-body">
         <h5 class="card-title">{{image.timestamp*1000 | date:'h:mm:ss a, MMM d y'}}</h5>
-        <p><span>Tagged Faces: </span>{{getFaces(image.bounding_box)}}</p>
-        <p class="card-text"><small class="text-muted">Tagged 27/06/2019</small></p>
+        <h6 class="taggedNames"><span>Tagged Faces: </span>{{getFaces(image.bounding_box)}}</h6>
       </div>
     </div>
   </div>

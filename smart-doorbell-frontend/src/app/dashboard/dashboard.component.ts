@@ -23,6 +23,7 @@ export class DashBoardComponent implements OnInit {
   dashBoardImages:Array<any>;
   imageModalRef;
   imgURL;
+  isCollapsedFilter = false;
 
   constructor(private modalService: BsModalService,private dashboardService: DashboardService, private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
 
@@ -124,9 +125,14 @@ export class DashBoardComponent implements OnInit {
   user: User;
 
   getFaces(boundingBox){
-    // console.log(boundingBox.map(e => e.userName));
-    // console.log("Image");
-    return boundingBox.map(e => e.userName).join(",")
+    return boundingBox.map(e => {
+      if (e.taggedTime != -1){
+        return `${e.userName} (${new Date(e.taggedTime * 1000).toLocaleDateString("en-US")})`
+      }else{
+        return `Unknown`
+      }
+  
+    }).join(", ")
   }
 
   ngOnInit() {
@@ -146,7 +152,6 @@ export class DashBoardComponent implements OnInit {
   }
 
   getBoxCoordinates(boundedbox,img){
-
     return {
       left_c: +boundedbox.left * img.width,
       top_c: +boundedbox.top * img.height,
@@ -155,6 +160,13 @@ export class DashBoardComponent implements OnInit {
     }
   }
 
+  getTextCoordinates(boxCoordinates){
+    if(boxCoordinates.top_c < 10){
+      boxCoordinates.top_c += boxCoordinates.f_height + 20; 
+    }
+  }
+
+  
   makeCanvasRect(image){
     let c = <HTMLCanvasElement>document.getElementById('canvas-' + image.src);
     let ctx = c.getContext("2d");
@@ -167,20 +179,24 @@ export class DashBoardComponent implements OnInit {
 
     let canvas = <HTMLCanvasElement>document.getElementById('canvas-' + image.src);
     let context = canvas.getContext('2d');
-
+    
+    console.log("Rectangle Canvas")
+    
+    
     image["boundedBox"].forEach(boundedbox => {
         let boxCoordinates = this.getBoxCoordinates(boundedbox,img);
         context.beginPath();
         context.rect(boxCoordinates.left_c, boxCoordinates.top_c, boxCoordinates.f_width, boxCoordinates.f_height);
         context.lineWidth = 2;
-        context.strokeStyle = 'black';
+        context.strokeStyle = '#d7d7d7';
         context.stroke();
 
         if(boundedbox.tagged){
           context.font = "20px Arial";
           context.fillStyle = "red";
-          context.fillText(boundedbox.userName, boxCoordinates.left_c, boxCoordinates.top_c);
-          
+           this.getTextCoordinates(boxCoordinates);
+
+          context.fillText(boundedbox.userName, boxCoordinates.left_c, boxCoordinates.top_c-5);
         }
        
     });
@@ -189,7 +205,7 @@ export class DashBoardComponent implements OnInit {
       
       let targetCanvas = <HTMLCanvasElement>e.target || <HTMLCanvasElement>e.srcElement;
 
-      var rect = targetCanvas.getBoundingClientRect();
+      let rect = targetCanvas.getBoundingClientRect();
       
       const clickedPos = {
         x: e.clientX - rect.left,
