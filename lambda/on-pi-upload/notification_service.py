@@ -10,14 +10,26 @@ SUBJECT = "Someone is at your door"
 ses_client = boto3.client('ses',region_name=AWS_REGION)
 s3_client = boto3.client('s3', 'us-west-2')
 
-def send_email_with_s3(recipient, user_name, bucket_name, bucket_key):
+msg = "You have %s known persons at your doorstep."
+msg1 = "You have %s unknown persons at your doorstep."
+msg2 = "Please login to your dashboard to see more details or tag an unknown face."
+
+
+def send_email_with_s3(recipient, user_names, unknown_user_count, bucket_name, bucket_key):
     
     device_owner_id = bucket_key.split("/")[0]
     bucket_file_name = bucket_key.split("/")[1]
     print ('Recevied request to send email for Bucket[%s], Owner[%s], Bucket_key[%s] To [%s]' \
     %  (bucket_name, device_owner_id, bucket_key, recipient))
     msg = MIMEMultipart()
-    new_body = "You have a person(see attached picture) at your doorstep. Please login to your dashboard to see more details or tag an unknown face."
+    new_body = ""
+    if len(user_names) > 0:
+        new_body += ("You have %s known persons at your doorstep." % len(user_names) + '\n')
+        for name in user_names:
+            new_body += (name + "\n")
+    if unknown_user_count > 0:
+        new_body += ("You have %s unknown persons at your doorstep." % unknown_user_count)
+        
     text_part = MIMEText(new_body, _subtype="html")
     msg.attach(text_part)
     msg["To"] = recipient
