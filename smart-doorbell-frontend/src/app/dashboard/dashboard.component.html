@@ -1,10 +1,10 @@
 <template #alertContainer></template>
-<br>
 
-<button type="button" class="btn btn-light d-block d-sm-none w-100" (click)="isCollapsedFilter = !isCollapsedFilter" [attr.aria-expanded]="!isCollapsed"
+<br class="d-block d-sm-none w-100"/>
+<button type="button" class="btn btn-light d-block d-sm-none w-100" (click)="isCollapsedFilter = !isCollapsedFilter" [attr.aria-expanded]="!isCollapsedFilter"
   aria-controls="collapseFilters"> {{ isCollapsedFilter == true ? 'Show Filters' : 'Hide Filters' }}
 </button>
-<br>
+<br class="d-block d-sm-none w-100"/>
 
 <form  id="isCollapsedFilter" [collapse]="isCollapsedFilter" (ngSubmit)="onFilterSearch()"  >
   
@@ -31,23 +31,35 @@
 
 </form>
 
+<div class="spinner text-primary "  *ngIf="showSpinner" role="status">
+  <span class="sr-only">Loading...</span>
+</div>
+
 <ng-template #imageModal>
   <div class="modal-header">
     <h4 class="modal-title pull-left">Upload New Face</h4>
-    <button type="button" class="close pull-right" aria-label="Close" (click)="imageModalRef.hide()">
+    <button type="button" class="close pull-right" aria-label="Close" (click)="refershNewFaceModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
+
   <div class="modal-body">
     <form (ngSubmit)="onFaceUpload()" name="tagForm" >
-        <input type="file"  name="file" required (change)="onFaceImageSelected($event)">
-        <br><br>
-        <label for="tahInput">Tag Name:</label>
-        <input id="tahInput"  type="text"  name="text" required [(ngModel)]="imagetag.tag" >
-        <br><br>
-        <img [src]="imgURL" height="200" width="200" *ngIf="imgURL">
-        <br><br>
-        <button type="submit" class="btn btn-primary">Submit Tag</button>
+        <div class="d-inline-block col-xs-12 col-12 col-md-12 form-group">
+          <input type="file"  name="file" required (change)="onFaceImageSelected($event)">
+        </div>
+      
+        <div class="d-inline-block col-xs-12 col-12 col-md-12 form-group">
+          <label for="tahInput">Tag Name:</label>
+          <input id="tahInput" type="text" name="text" required [(ngModel)]="imagetag.tag" class="form-control">
+  
+        </div>
+
+        <div *ngIf="imgURL" class="d-inline-block col-xs-12 col-12 col-md-12 form-group">
+          <img [src]="imgURL" class="img-fluid" >
+        </div>
+        
+        <button type="submit" class="btn btn-primary float-right">Submit Tag</button>
     </form>
   </div>
 </ng-template>

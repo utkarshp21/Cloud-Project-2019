@@ -24,6 +24,7 @@ export class DashBoardComponent implements OnInit {
   imageModalRef;
   imgURL;
   isCollapsedFilter = false;
+  showSpinner = false;
 
   constructor(private modalService: BsModalService,private dashboardService: DashboardService, private resolver: ComponentFactoryResolver, private amplifyService: AmplifyService, public router: Router) { }
 
@@ -39,7 +40,6 @@ export class DashBoardComponent implements OnInit {
     this.componentRef.instance.tagOutput.subscribe(event => {
       if(event != "error"){
         this.onFilterSearch();
-      // this.refreshImageData(event)
       }
       this.container.clear();
     });
@@ -66,15 +66,26 @@ export class DashBoardComponent implements OnInit {
 
   }
 
+  refershNewFaceModal(){
+    this.imageModalRef.hide();
+    this.imagetag = new imageTag();
+    this.imgURL = null;
+  }
+
   onFaceUpload(){
 
     if (this.imagetag.tag && this.imagetag.image) {
+      this.showSpinner = true;
       this.dashboardService.uploadTaggedImage(this.imagetag, this.user.idToken).subscribe(data => {
-         this.imageModalRef.hide();
-         this.imagetag = new imageTag();
-         this.imgURL= null;
-         this.onFilterSearch();
+          this.refershNewFaceModal();
+         
+          setTimeout(() => {
+            this.onFilterSearch();
+            this.showSpinner = false;
+          }, 3000);
+
       },err => {
+          this.showSpinner = false;
         if (err.status == 401) {
           this.signOut();
         }
@@ -98,6 +109,7 @@ export class DashBoardComponent implements OnInit {
   //       });
   //     }
   // }
+  
   ngOnDestroy() {
     if(this.componentRef){
       this.componentRef.destroy();
@@ -107,14 +119,17 @@ export class DashBoardComponent implements OnInit {
   filter = new Filter();
 
   onFilterSearch(){
+    this.showSpinner = true;
     this.dashboardService.filterImages(Object.assign({}, this.filter), this.user.idToken).subscribe(
       data => {
+        this.showSpinner = false;
         this.dashBoardImages = data.body;
           if (!this.dashBoardImages.length){
             alert("No Images with the given filter");
           }
       },
       err => {
+        this.showSpinner = false;
         if (err.status == 401){
           this.signOut();
         }
