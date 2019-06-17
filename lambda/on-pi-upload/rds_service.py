@@ -2,10 +2,10 @@ import json
 import sys
 import pymysql
 
-rds_host  = "smart-door-bell.cte6mbz5fnza.us-east-1.rds.amazonaws.com"
-name = "admin"
-password = "admin123"
-db_name = "admin"
+rds_host  = os.environ['RDS_HOST']
+name = os.environ['RDS_USERNAME']
+password = os.environ['RDS_PASSWORD']
+db_name = os.environ['RDS_DB_NAME']
 
 def getConn():
     try:
