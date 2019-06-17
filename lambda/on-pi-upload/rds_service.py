@@ -1,6 +1,7 @@
 import json
 import sys
 import pymysql
+import os
 
 rds_host  = os.environ['RDS_HOST']
 name = os.environ['RDS_USERNAME']
